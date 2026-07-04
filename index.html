@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>World Cup 2026 Quiz Pro</title>
+    <style>
+        /* MODERN INTERACTIVE THEME VARIABLES */
+        :root {
+            --bg-color: #080b10;
+            --container-bg: rgba(17, 22, 30, 0.85);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-muted: #8b949e;
+            --stats-bar-bg: rgba(255, 255, 255, 0.04);
+            --option-bg: rgba(255, 255, 255, 0.05);
+            --option-border: rgba(255, 255, 255, 0.08);
+            --option-text: #ecf0f1;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --support-bg: rgba(255, 255, 255, 0.03);
+            --container-padding: 30px;
+            --container-max-width: 480px;
+            --font-scale: 1;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f4f6f9;
+            --container-bg: rgba(255, 255, 255, 0.95);
+            --border-color: rgba(0, 0, 0, 0.08);
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --stats-bar-bg: rgba(0, 0, 0, 0.04);
+            --option-bg: rgba(0, 0, 0, 0.03);
+            --option-border: rgba(0, 0, 0, 0.08);
+            --option-text: #1f2937;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --support-bg: rgba(0, 0, 0, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        html, body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            background: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+            overflow-x: hidden;
+        }
+
+        .quiz-container {
+            width: 100%;
+            max-width: var(--container-max-width);
+            background: var(--container-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: clamp(16px, 5vw, 24px);
+            padding: clamp(16px, 4vw, var(--container-padding));
+            box-shadow: 0 12px 40px var(--shadow-color);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        /* HEADER CONTROLS (THEME TOGGLER + SOUND TOGGLE) */
+        .header-controls {
+            display: flex;
+            justify-content: flex-end;
+            gap: 6px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .header-btn {
+            background: var(--stats-bar-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: clamp(0.65rem, 1.6vw, 0.8rem);
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .header-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .shake {
+            animation: shakeKeyframe 0.4s ease-in-out;
+        }
+
+        @keyframes shakeKeyframe {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        .page { display: none; }
+        .page.active { display: block; }
+
+        h1 {
+            font-size: clamp(1.6rem, 6vw, 2.2rem);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00f2fe, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 20px rgba(0, 242, 254, 0.2);
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: clamp(1rem, 3.5vw, 1.35rem);
+            margin-bottom: 15px;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-size: clamp(0.85rem, 2.2vw, 1rem);
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #4facfe;
+            font-size: clamp(0.75rem, 2vw, 0.9rem);
+            font-weight: bold;
+        }
+        .input-field, .select-field {
+            width: 100%;
+            padding: clamp(10px, 2.5vw, 14px);
+            background: rgba(128, 128, 128, 0.08);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: clamp(0.85rem, 2.2vw, 1rem);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .select-field option {
+            background: var(--bg-color);
+            color: var(--text-main);
+        }
+        .input-field:focus, .select-field:focus {
+            border-color: #00f2fe;
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+        }
+
+        .profile-badge {
+            background: rgba(0, 242, 254, 0.08);
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            padding: clamp(10px, 2.5vw, 14px);
+            border-radius: 12px;
+            font-size: clamp(0.75rem, 2vw, 0.85rem);
+            margin-bottom: 16px;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .profile-badge > div {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .reset-btn {
+            background: rgba(255, 79, 79, 0.15);
+            border: 1px solid rgba(255, 79, 79, 0.3);
+            color: #ff4f4f;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: clamp(0.6rem, 1.5vw, 0.75rem);
+            flex-shrink: 0;
+        }
+
+        /* TROPHY ROOM GALLERY COMPONENT */
+        .trophy-cabinet {
+            background: var(--stats-bar-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: clamp(10px, 2.5vw, 15px);
+            margin-bottom: 20px;
+        }
+        .trophy-title {
+            font-size: clamp(0.7rem, 2vw, 0.85rem);
+            font-weight: bold;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .trophy-grid {
+            display: flex;
+            justify-content: center;
+            gap: clamp(8px, 3vw, 15px);
+            flex-wrap: wrap;
+        }
+        .trophy-item {
+            font-size: clamp(1.3rem, 4vw, 1.6rem);
+            position: relative;
+            cursor: help;
+            filter: grayscale(100%) opacity(0.25);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease;
+        }
+        .trophy-item.unlocked {
+            filter: grayscale(0%) opacity(1);
+            transform: scale(1.1);
+            animation: trophyPop 0.5s ease-out;
+        }
+        @keyframes trophyPop {
+            0% { transform: scale(0.5); }
+            70% { transform: scale(1.3); }
+            100% { transform: scale(1.1); }
+        }
+        .trophy-item .tooltip {
+            visibility: hidden;
+            width: 100px;
+            background-color: #000;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 4px 6px;
+            font-size: 0.6rem;
+            position: absolute;
+            z-index: 100;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -50px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            pointer-events: none;
+            line-height: 1.2;
+        }
+        .trophy-item:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            background: var(--stats-bar-bg);
+            padding: clamp(8px, 2vw, 12px) clamp(12px, 3vw, 18px);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
+            font-weight: bold;
+            border: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .stats-bar > div {
+            flex: 1;
+            min-width: 60px;
+        }
+
+        .stat-highlight { color: #00ff87; }
+        .score-pulse {
+            animation: scorePulseKeyframe 0.4s ease-out;
+            color: #ffd700 !important;
+        }
+        @keyframes scorePulseKeyframe {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.25); }
+            100% { transform: scale(1); }
+        }
+
+        .heart-highlight { color: #ff4f4f; font-size: 1.1rem; }
+
+        .motivation-hud {
+            background: rgba(79, 172, 254, 0.1);
+            border: 1px dashed rgba(79, 172, 254, 0.3);
+            border-radius: 10px;
+            padding: clamp(6px, 1.5vw, 8px);
+            font-size: clamp(0.65rem, 1.8vw, 0.82rem);
+            color: #4facfe;
+            margin-bottom: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 1.4;
+        }
+
+        .hint-btn {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            border: none;
+            color: #080b10;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: clamp(0.6rem, 1.6vw, 0.78rem);
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
+            white-space: nowrap;
+        }
+
+        .hint-btn:disabled {
+            background: rgba(128, 128, 128, 0.1);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .reward-overlay {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color);
+            opacity: 0.98;
+            z-index: 10;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            border-radius: inherit;
+        }
+        .reward-overlay.active {
+            display: flex;
+        }
+
+        .reward-box {
+            background: var(--container-bg);
+            border: 2px solid #ffd700;
+            border-radius: 20px;
+            padding: clamp(18px, 4vw, 25px);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            width: 100%;
+            max-width: 340px;
+        }
+
+        .reward-title {
+            color: #ffd700;
+            font-size: clamp(1.3rem, 4vw, 1.6rem);
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .timer-track {
+            width: 100%;
+            height: 5px;
+            background: rgba(128, 128, 128, 0.15);
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .timer-bar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #00ff87, #60efff);
+            transition: width 0.1s linear;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #00f2fe, #4facfe);
+            border: none;
+            color: white;
+            padding: clamp(12px, 3vw, 16px) clamp(20px, 5vw, 30px);
+            font-size: clamp(0.85rem, 2.2vw, 1rem);
+            font-weight: bold;
+            border-radius: 14px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+            margin-bottom: 8px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .secondary-btn {
+            background: var(--stats-bar-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: clamp(12px, 3vw, 16px) clamp(20px, 5vw, 30px);
+            font-size: clamp(0.85rem, 2.2vw, 1rem);
+            font-weight: bold;
+            border-radius: 14px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 8px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .quit-btn {
+            background: var(--stats-bar-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: clamp(10px, 2.5vw, 12px);
+            font-size: clamp(0.75rem, 2vw, 0.9rem);
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(10px, 2.5vw, 14px);
+            margin-bottom: 8px;
+        }
+
+        .option-btn {
+            background: var(--option-bg);
+            border: 1px solid var(--option-border);
+            color: var(--option-text);
+            padding: clamp(12px, 3vw, 16px);
+            text-align: left;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: clamp(0.8rem, 2.2vw, 0.95rem);
+            font-weight: 500;
+            -webkit-tap-highlight-color: transparent;
+            word-break: break-word;
+        }
+
+        .option-btn.correct {
+            background: rgba(0, 255, 135, 0.2) !important;
+            border-color: #00ff87 !important;
+            color: #00ff87 !important;
+        }
+
+        .option-btn.wrong {
+            background: rgba(255, 79, 79, 0.2) !important;
+            border-color: #ff4f4f !important;
+            color: #ff4f4f !important;
+        }
+
+        .option-btn.hidden-option {
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .disabled { pointer-events: none; }
+        .badge-box {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            margin: 12px 0;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        /* Developer Contact */
+        .developer-contact {
+            background: var(--support-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: clamp(12px, 3vw, 1.5rem) clamp(10px, 2.5vw, 1rem);
+            margin: 1.2rem 0 0.3rem;
+            text-align: center;
+            backdrop-filter: blur(4px);
+        }
+        .developer-contact h3 {
+            font-size: clamp(0.75rem, 2vw, 0.9rem);
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            color: var(--text-main);
+        }
+        .developer-contact .sub-head {
+            color: var(--text-muted);
+            font-size: clamp(0.65rem, 1.6vw, 0.78rem);
+            margin-bottom: 0.8rem;
+        }
+        .contact-badges {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px 12px;
+        }
+        .contact-badges a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.04);
+            padding: 6px 14px 6px 12px;
+            border-radius: 40px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 500;
+            font-size: clamp(0.65rem, 1.6vw, 0.8rem);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(4px);
+            transition: 0.2s;
+        }
+        .contact-badges a i { font-size: clamp(0.9rem, 2vw, 1.1rem); }
+        .contact-badges a.wa-badge i { color: #25D366; }
+        .contact-badges a.ig-badge i { color: #E4405F; }
+        .contact-badges a:hover {
+            background: rgba(255,255,255,0.07);
+            border-color: rgba(255,255,255,0.15);
+            transform: scale(1.02);
+        }
+
+        /* Sound toggle */
+        .sound-muted { opacity: 0.5; }
+        .sound-muted .fa-volume-high { display: none; }
+        .sound-unmuted .fa-volume-xmark { display: none; }
+
+        /* Share row */
+        .share-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .share-btn {
+            flex: 1;
+            padding: clamp(10px, 2.5vw, 12px) clamp(8px, 2vw, 10px);
+            border-radius: 12px;
+            font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .share-wa {
+            background: #25D366;
+            color: white;
+        }
+        .share-wa:hover {
+            background: #1da851;
+        }
+        .share-copy {
+            background: var(--stats-bar-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+        .share-copy:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Toast */
+        .toast-message {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 242, 254, 0.9);
+            color: #080b10;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            z-index: 200;
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            transform: translateX(-50%) translateY(20px);
+            pointer-events: none;
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast-message.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Small screen tweaks */
+        @media (max-width: 400px) {
+            .quiz-container { padding: 14px; }
+            .profile-badge { flex-direction: column; align-items: stretch; gap: 6px; }
+            .profile-badge > div { text-align: center; }
+            .reset-btn { align-self: center; }
+            .stats-bar { flex-direction: column; align-items: center; gap: 2px; }
+            .stats-bar > div { text-align: center; }
+            .header-controls { justify-content: center; }
+        }
+
+        @media (max-width: 360px) {
+            .quiz-container { padding: 10px; border-radius: 16px; }
+            .contact-badges a { padding: 4px 10px; font-size: 0.6rem; }
+            .share-row { flex-direction: column; }
+        }
+
+        /* Landscape phone support */
+        @media (max-height: 600px) and (orientation: landscape) {
+            body { padding: 8px; align-items: flex-start; }
+            .quiz-container { padding: 12px; border-radius: 16px; max-width: 420px; }
+            h1 { font-size: 1.4rem; margin-bottom: 6px; }
+            .trophy-cabinet { padding: 8px; margin-bottom: 10px; }
+            .trophy-item { font-size: 1.2rem; }
+            .stats-bar { padding: 6px 12px; margin-bottom: 8px; font-size: 0.7rem; }
+            .option-btn { padding: 8px 12px; }
+            .btn { padding: 10px 16px; font-size: 0.8rem; }
+            .developer-contact { padding: 8px; margin: 8px 0 0; }
+            .motivation-hud { font-size: 0.6rem; padding: 4px 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container" id="main-container">
+        
+        <!-- VISUAL CONTROL ENGINE PANEL -->
+        <div class="header-controls">
+            <button class="header-btn" onclick="toggleSound()" id="sound-toggle-btn">
+                <span class="sound-unmuted"><i class="fa-solid fa-volume-high"></i></span>
+                <span class="sound-muted" style="display:none;"><i class="fa-solid fa-volume-xmark"></i></span>
+                <span id="sound-status-label">Sound: On</span>
+            </button>
+            <button class="header-btn" onclick="toggleDisplayTheme()">🌓 Theme: <span id="theme-mode-label">Dark</span></button>
+        </div>
+        
+        <!-- IN-GAME LIVE REWARD POPUP OVERLAY -->
+        <div id="reward-modal" class="reward-overlay">
+            <div class="reward-box">
+                <div class="reward-title">🎯 PASS MARK HIT!</div>
+                <p style="margin-bottom: 12px;" id="reward-message">You reached the tactical target score!</p>
+                <div id="reward-perk-display" style="color: #00ff87; font-weight: bold; font-size: clamp(0.9rem, 2.5vw, 1.1rem); margin-bottom: 16px;">🎁 REWARD: +1 Bonus Life</div>
+                <button class="btn" onclick="resumeFromReward()">Claim & Resume Match</button>
+            </div>
+        </div>
+
+        <!-- PROFILE ACCOUNT CREATION SCREEN -->
+        <div id="account-page" class="page">
+            <h1>🏆 MANAGER PROFILE</h1>
+            <p>Setup your account credentials to back up local dashboard profiles.</p>
+            
+            <div class="input-group">
+                <label for="username-input">MANAGER NAME</label>
+                <input type="text" id="username-input" class="input-field" placeholder="Enter name...">
+            </div>
+
+            <div class="input-group">
+                <label for="continent-select">CHOOSE CONTINENT</label>
+                <select id="continent-select" class="select-field" onchange="populateCountries()">
+                    <option value="">-- Select Continent --</option>
+                    <option value="europe">Europe (UEFA)</option>
+                    <option value="southamerica">South America (CONMEBOL)</option>
+                    <option value="africa">Africa (CAF)</option>
+                    <option value="asia">Asia & Oceania (AFC/OFC)</option>
+                    <option value="northamerica">North & Central America (CONCACAF)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="country-select">FAVORITE WORLD CUP TEAM</label>
+                <select id="country-select" class="select-field" disabled>
+                    <option value="">-- Choose Continent First --</option>
+                </select>
+            </div>
+
+            <button class="btn" onclick="createAccount()">Save & Register Profile</button>
+        </div>
+        
+        <!-- WELCOME SCREEN -->
+        <div id="welcome-page" class="page">
+            <div id="welcome-profile" class="profile-badge"></div>
+            
+            <!-- PERSISTENT VISUAL TROPHY CABINET HOOK -->
+            <div class="trophy-cabinet">
+                <div class="trophy-title">🛡️ Unlocked Manager Trophies</div>
+                <div class="trophy-grid" id="welcome-cabinet-grid">
+                    <div class="trophy-item" id="t-group"><span class="tooltip">Group Survival<br>Clear Stage 1</span>🌱</div>
+                    <div class="trophy-item" id="t-ko"><span class="tooltip">Knockout General<br>Clear Stage 3</span>⚔️</div>
+                    <div class="trophy-item" id="t-perfect"><span class="tooltip">Invincible Clean Sheet<br>Get 100 points in a Stage</span>💯</div>
+                    <div class="trophy-item" id="t-cup"><span class="tooltip">World Cup Title<br>Clear Stage 5</span>🏆</div>
+                </div>
+            </div>
+
+            <h1>🏆 WORLD CUP PRO</h1>
+            <p>5 Knockout Stages. 10 Questions each. Pass Mark is 70 points per stage.</p>
+            <button class="btn" onclick="startLevel(1)">Kick Off Tournament</button>
+        </div>
+
+        <!-- PLAYING SCREEN -->
+        <div id="quiz-page" class="page">
+            <div class="stats-bar">
+                <div>STAGE: <span id="current-level-display" class="stat-highlight">1</span>/5</div>
+                <div>LIVES: <span id="lives-display" class="heart-highlight">❤️❤️❤️</span></div>
+                <div>STAGE SCORE: <span id="stage-score-display" class="stat-highlight">0</span>/100</div>
+            </div>
+            
+            <div id="commentator-hud" class="motivation-hud">📋 Locker room talk: Focus up, team!</div>
+            
+            <div class="stats-bar" style="margin-top: -5px; font-size: clamp(0.6rem, 1.6vw, 0.8rem); background: transparent; border: none; padding: 0 5px;">
+                <div>MATCH PROGRESS: <span id="question-number-display">1/10</span></div>
+                <div>
+                    <button id="hint-button-element" class="hint-btn" onclick="useTacticalHint()">💡 HINT (<span id="hint-count-display">1</span>)</button>
+                </div>
+            </div>
+            
+            <div class="timer-track">
+                <div id="timer-bar" class="timer-bar"></div>
+            </div>
+
+            <h2 id="question-text">Question loading...</h2>
+            <div class="options-list" id="options-container"></div>
+
+            <button class="quit-btn" onclick="quitGame()">🏳️ Quit Match</button>
+        </div>
+
+        <!-- STAGE TRANSITION SCREEN -->
+        <div id="transition-page" class="page">
+            <h1 id="transition-header">🔥 STAGE CLEARED</h1>
+            <p id="transition-text">Brilliant tactics. Advance to the next knockout round.</p>
+            <button class="btn" id="next-stage-btn" onclick="advanceToNextStage()">Unlock Next Round</button>
+            <button class="quit-btn" onclick="quitGame()">🏳️ Return to Menu</button>
+        </div>
+
+        <!-- FINAL RESULTS SCREEN -->
+        <div id="results-page" class="page">
+            <h1 id="results-header">🏁 GAME OVER</h1>
+            <div id="results-profile" class="profile-badge"></div>
+            <p id="outcome-text">Final Manager Performance Rating:</p>
+            <div class="badge-box" id="performance-badge">📋 LOADING BADGE</div>
+            <div class="stats-bar" style="justify-content: center; gap: clamp(10px, 3vw, 20px); font-size: clamp(1rem, 3vw, 1.3rem);">
+                <div>TOTAL SCORE: <span id="final-score" class="stat-highlight">0</span> / 500</div>
+            </div>
+            
+            <!-- 🆕 SHARE RESULTS ROW -->
+            <div class="share-row">
+                <button class="share-btn share-wa" onclick="shareOnWhatsApp()">
+                    <i class="fa-brands fa-whatsapp"></i> Share
+                </button>
+                <button class="share-btn share-copy" onclick="copyResultToClipboard()">
+                    <i class="fa-regular fa-copy"></i> Copy
+                </button>
+            </div>
+            
+            <button class="btn" onclick="restartQuiz()">Replay Tournament</button>
+            <button class="secondary-btn" onclick="quitGame()">🏠 Return to Menu</button>
+        </div>
+
+        <!-- 🆕 Developer Contact / Support block -->
+        <div class="developer-contact">
+            <h3>📬 Developer &amp; Support</h3>
+            <p class="sub-head">Have questions, feedback, or need help? Reach out directly.</p>
+            <div class="contact-badges">
+                <a href="https://api.whatsapp.com/send?phone=233536476565" target="_blank" class="wa-badge">
+                    <i class="fa-brands fa-whatsapp"></i> +233 53 647 6565
+                </a>
+                <a href="https://instagram.com/amos_baidoo_" target="_blank" class="ig-badge">
+                    <i class="fa-brands fa-instagram"></i> @amos_baidoo_
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast message -->
+    <div id="toast-message" class="toast-message">📋 Copied to clipboard!</div>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        // ========== SHARE FEATURE ==========
+        let latestFinalScore = 0;
+        let latestBadgeText = "";
+        let latestManagerName = "";
+
+        function generateShareText() {
+            const name = latestManagerName || "Manager";
+            const score = latestFinalScore;
+            const badge = latestBadgeText || "WORLD CUP PLAYER";
+            const maxScore = 500;
+            return `⚽ WORLD CUP QUIZ PRO ⚽\n\n👤 ${name}\n🏆 ${badge}\n📊 SCORE: ${score}/${maxScore}\n\nCan you beat my score? Play now! 🏆`;
+        }
+
+        function shareOnWhatsApp() {
+            const text = encodeURIComponent(generateShareText());
+            const url = `https://api.whatsapp.com/send?text=${text}`;
+            window.open(url, '_blank');
+        }
+
+        function copyResultToClipboard() {
+            const text = generateShareText();
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast-message');
+                toast.textContent = '📋 Copied to clipboard!';
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2500);
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                const toast = document.getElementById('toast-message');
+                toast.textContent = '📋 Copied to clipboard!';
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2500);
+            });
+        }
+
+        // ========== SOUND TOGGLE ==========
+        let soundEnabled = true;
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById('sound-toggle-btn');
+            const label = document.getElementById('sound-status-label');
+            const unmutedSpan = btn.querySelector('.sound-unmuted');
+            const mutedSpan = btn.querySelector('.sound-muted');
+
+            if (soundEnabled) {
+                unmutedSpan.style.display = 'inline';
+                mutedSpan.style.display = 'none';
+                label.textContent = 'Sound: On';
+                btn.classList.remove('sound-muted');
+                btn.classList.add('sound-unmuted');
+            } else {
+                unmutedSpan.style.display = 'none';
+                mutedSpan.style.display = 'inline';
+                label.textContent = 'Sound: Off';
+                btn.classList.remove('sound-unmuted');
+                btn.classList.add('sound-muted');
+            }
+        }
+
+        // ========== GAME DATA ==========
+        const regionalTeams = {
+            europe: [
+                { name: "Germany", flag: "🇩🇪" }, { name: "France", flag: "🇫🇷" },
+                { name: "Italy", flag: "🇮🇹" }, { name: "Spain", flag: "🇪🇸" },
+                { name: "England", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" }, { name: "Portugal", flag: "🇵🇹" },
+                { name: "Netherlands", flag: "🇳🇱" }, { name: "Croatia", flag: "🇭🇷" },
+                { name: "Belgium", flag: "🇧🇪" }, { name: "Switzerland", flag: "🇨🇭" }
+            ],
+            southamerica: [
+                { name: "Brazil", flag: "🇧🇷" }, { name: "Argentina", flag: "🇦🇷" },
+                { name: "Uruguay", flag: "🇺🇾" }, { name: "Colombia", flag: "🇨🇴" },
+                { name: "Chile", flag: "🇨🇱" }, { name: "Ecuador", flag: "🇪🇨" },
+                { name: "Paraguay", flag: "🇵🇾" }, { name: "Peru", flag: "🇵🇪" },
+                { name: "Venezuela", flag: "🇻🇪" }, { name: "Bolivia", flag: "🇧🇴" }
+            ],
+            africa: [
+                { name: "Morocco", flag: "🇲🇦" }, { name: "Ghana", flag: "🇬🇭" },
+                { name: "Nigeria", flag: "🇳🇬" }, { name: "Senegal", flag: "🇸🇳" },
+                { name: "Cameroon", flag: "🇨🇲" }, { name: "Egypt", flag: "🇪🇬" },
+                { name: "Algeria", flag: "🇩🇿" }, { name: "Ivory Coast", flag: "🇨🇮" },
+                { name: "Tunisia", flag: "🇹🇳" }, { name: "South Africa", flag: "🇿🇦" }
+            ],
+            asia: [
+                { name: "Japan", flag: "🇯🇵" }, { name: "Korea Republic", flag: "🇰🇷" },
+                { name: "Australia", flag: "🇦🇺" }, { name: "Saudi Arabia", flag: "🇸🇦" },
+                { name: "Iran", flag: "🇮🇷" }, { name: "India", flag: "🇮🇳" },
+                { name: "China PR", flag: "🇨🇳" }, { name: "New Zealand", flag: "🇳🇿" },
+                { name: "Uzbekistan", flag: "🇺🇿" }, { name: "Qatar", flag: "🇶🇦" }
+            ],
+            northamerica: [
+                { name: "Mexico", flag: "🇲🇽" }, { name: "USA", flag: "🇺🇸" },
+                { name: "Canada", flag: "🇨🇦" }, { name: "Costa Rica", flag: "🇨🇷" },
+                { name: "Panama", flag: "🇵🇦" }, { name: "Honduras", flag: "🇭🇳" },
+                { name: "Jamaica", flag: "🇯🇲" }, { name: "El Salvador", flag: "🇸🇻" },
+                { name: "Trinidad and Tobago", flag: "🇹🇹" }, { name: "Haiti", flag: "🇭🇹" }
+            ]
+        };
+
+        const questionsDatabase = {
+            1: [
+                { q: "Which country is hosting the opening match of the 2026 World Cup?", options: ["Mexico", "USA", "Canada", "Morocco"], answer: 0 },
+                { q: "How many total teams are competing in the 2026 World Cup?", options: ["32", "40", "48", "64"], answer: 2 },
+                { q: "How many teams advance from each group in the 2026 format?", options: ["Top 2 only", "Top 2 + 8 best 3rd-place", "Top 3 from every group", "Only group winners"], answer: 1 },
+                { q: "Which city is hosting the 2026 World Cup Final match?", options: ["Los Angeles", "New York/New Jersey", "Mexico City", "Dallas"], answer: 1 },
+                { q: "How many matches in total will be played in the 2026 tournament?", options: ["64", "80", "104", "128"], answer: 2 },
+                { q: "Which continent has the most direct qualifying slots for 2026?", options: ["Europe (UEFA)", "Africa (CAF)", "South America", "Asia (AFC)"], answer: 0 },
+                { q: "How many stadiums in Canada are hosting 2026 matches?", options: ["2", "3", "5", "6"], answer: 0 },
+                { q: "What is the total number of groups in the 2026 Group Stage?", options: ["8", "12", "16", "10"], answer: 1 },
+                { q: "Which iconic stadium is hosting matches in Mexico?", options: ["Estadio Azteca", "Estadio BBVA", "Estadio Akron", "All of the above"], answer: 3 },
+                { q: "How many teams are placed in each group for 2026?", options: ["3 teams", "4 teams", "5 teams", "6 teams"], answer: 1 }
+            ],
+            2: [
+                { q: "Which country won the 2022 World Cup in Qatar?", options: ["France", "Brazil", "Argentina", "Croatia"], answer: 2 },
+                { q: "What brand new knockout round is introduced in 2026?", options: ["Round of 48", "Round of 32", "Quarter-finals", "Super 16"], answer: 1 },
+                { q: "How many automatic qualifying slots did the three hosts receive?", options: ["1 slot", "2 slots", "3 slots", "0 slots"], answer: 2 },
+                { q: "Which US stadium has the largest seating capacity for 2026?", options: ["MetLife Stadium", "AT&T Stadium", "Azteca", "Arrowhead Stadium"], answer: 1 },
+                { q: "How many venues total across all three nations will host matches?", options: ["12", "16", "20", "24"], answer: 1 },
+                { q: "What is the maximum number of games a finalist will play in 2026?", options: ["7", "8", "9", "10"], answer: 1 },
+                { q: "Which edition of the men's FIFA World Cup is the 2026 tournament?", options: ["21st", "22nd", "23rd", "24th"], answer: 2 },
+                { q: "In what year did the USA previously host the men's World Cup?", options: ["1990", "1994", "1998", "2002"], answer: 1 },
+                { q: "Which host city sits furthest north in geography?", options: ["Toronto", "Vancouver", "Seattle", "Boston"], answer: 1 },
+                { q: "True or False: 2026 is the first time three nations co-host a World Cup.", options: ["True", "False", "Only two are main hosts", "It was done in 2002"], answer: 0 }
+            ],
+            3: [
+                { q: "Who is the all-time top goalscorer in Men's World Cup history?", options: ["Miroslav Klose", "Ronaldo Nazário", "Pelé", "Lionel Messi"], answer: 0 },
+                { q: "Which country has won the most FIFA World Cup titles?", options: ["Germany", "Italy", "Argentina", "Brazil"], answer: 3 },
+                { q: "Which African nation became the first to reach a World Cup semi-final?", options: ["Ghana", "Cameroon", "Morocco", "Senegal"], answer: 2 },
+                { q: "Who scored the famous 'Hand of God' goal in 1986?", options: ["Diego Maradona", "Pelé", "Zinedine Zidane", "Johan Cruyff"], answer: 0 },
+                { q: "Which country hosted the first-ever FIFA World Cup in 1930?", options: ["Brazil", "Uruguay", "Italy", "France"], answer: 1 },
+                { q: "What award is given to the tournament's top goalscorer?", options: ["Golden Ball", "Golden Boot", "Golden Glove", "MVP Trophy"], answer: 1 },
+                { q: "Which nation lost three World Cup finals without ever winning one?", options: ["Netherlands", "Argentina", "Croatia", "France"], answer: 0 },
+                { q: "Who is the youngest player to ever score in a World Cup match?", options: ["Kylian Mbappé", "Pelé", "Gavi", "Lionel Messi"], answer: 1 },
+                { q: "Which goalkeeper kept 5 clean sheets to help Italy win in 2006?", options: ["Gianluigi Buffon", "Iker Casillas", "Oliver Kahn", "Dida"], answer: 0 },
+                { q: "Which country won back-to-back World Cups in 1958 and 1962?", options: ["Italy", "West Germany", "Brazil", "Uruguay"], answer: 2 }
+            ],
+            4: [
+                { q: "In which World Cup tournament was VAR technology introduced?", options: ["Brazil 2014", "Russia 2018", "Qatar 2022", "South Africa 2010"], answer: 1 },
+                { q: "Who was the captain of the 2010 World Cup winning Spanish team?", options: ["Xavi", "Andres Iniesta", "Iker Casillas", "Carles Puyol"], answer: 2 },
+                { q: "Which country has played the most matches without ever winning a title?", options: ["Mexico", "England", "Netherlands", "Sweden"], answer: 0 },
+                { q: "What happens if a knockout match remains tied after 120 minutes?", options: ["Golden Goal", "Replay match", "Penalty Shootout", "Coin toss"], answer: 2 },
+                { q: "Which country famously lost 7-1 on home soil in a 2014 semi-final?", options: ["Argentina", "Brazil", "Colombia", "Portugal"], answer: 1 },
+                { q: "Who won the Best Young Player award at the 2018 World Cup?", options: ["Kylian Mbappé", "Luka Modrić", "Paul Pogba", "Harry Kane"], answer: 0 },
+                { q: "Which squad famously went undefeated throughout the entire 2010 tournament but exited early?", options: ["New Zealand", "Spain", "Italy", "Ivory Coast"], answer: 0 },
+                { q: "Which country scored the fastest goal in World Cup history (11 seconds)?", options: ["Turkey", "South Korea", "Germany", "Brazil"], answer: 0 },
+                { q: "Who coached France to victory in 2018, winning both as player and manager?", options: ["Zinedine Zidane", "Didier Deschamps", "Laurent Blanc", "Thierry Henry"], answer: 1 },
+                { q: "Which nation is the only one to participate in every single World Cup?", options: ["Germany", "Italy", "Argentina", "Brazil"], answer: 3 }
+            ],
+            5: [
+                { q: "Who won the Golden Ball trophy at both the 2014 and 2022 World Cups?", options: ["Cristiano Ronaldo", "Thomas Müller", "Lionel Messi", "Kylian Mbappé"], answer: 2 },
+                { q: "Which country won its first and only World Cup trophy in 1966?", options: ["France", "England", "Spain", "Uruguay"], answer: 1 },
+                { q: "Who is the all-time leading World Cup goalscorer for an African nation?", options: ["Asamoah Gyan", "Samuel Eto'o", "Didier Drogba", "Roger Milla"], answer: 0 },
+                { q: "Which official ball was famous for its wild aerodynamic shifts in 2010?", options: ["Jabulani", "Brazuca", "Telstar", "Al Rihla"], answer: 0 },
+                { q: "What country did Croatia defeat to finish third in the 2022 World Cup?", options: ["Morocco", "France", "Brazil", "Belgium"], answer: 0 },
+                { q: "Who scored a historic hat-trick in the 2022 World Cup final match?", options: ["Lionel Messi", "Kylian Mbappé", "Julian Alvarez", "Olivier Giroud"], answer: 1 },
+                { q: "Which country hosted the first African World Cup tournament in 2010?", options: ["Egypt", "Nigeria", "South Africa", "Morocco"], answer: 2 },
+                { q: "Which goalkeeper won the Golden Glove award at the 2022 tournament?", options: ["Emiliano Martínez", "Hugo Lloris", "Yassine Bounou", "Dominik Livaković"], answer: 0 },
+                { q: "How many total teams qualified for the very first World Cup in 1930?", options: ["13 teams", "16 teams", "24 teams", "32 teams"], answer: 0 },
+                { q: "Who was the legendary captain who hoisted the trophy for Argentina in 1986?", options: ["Daniel Passarella", "Diego Maradona", "Mario Kempes", "Lionel Messi"], answer: 1 }
+            ]
+        };
+
+        let userAccount = null;
+        let currentLevel = 1;
+        let currentQuestionIndex = 0;
+        let totalScore = 0;
+        let stageScore = 0;
+        let lives = 3;
+        let timerInterval;
+        let timeLeft = 15;
+        const maxTime = 15;
+        
+        let currentShuffledOptions = [];
+        let currentCorrectShuffledIndex = -1;
+        
+        const passMarkTarget = 70;
+        let hasPassedCurrentStage = false;
+        let hintsAvailableCount = 1; 
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); 
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1); 
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(110, audioCtx.currentTime); 
+                osc.frequency.linearRampToValueAtTime(70, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'tick') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+            } else if (type === 'reward') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+                osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.6);
+            } else if (type === 'hint') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(330, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(220, audioCtx.currentTime + 0.25);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.25);
+            }
+        }
+
+        function toggleDisplayTheme() {
+            const currentTheme = document.body.getAttribute('data-theme') || 'dark';
+            const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', nextTheme);
+            document.getElementById('theme-mode-label').innerText = nextTheme === 'dark' ? 'Dark' : 'Light';
+        }
+
+        window.onload = function() {
+            const stored = localStorage.getItem('wc_quiz_profile');
+            if (stored) {
+                userAccount = JSON.parse(stored);
+                showWelcomePage();
+            } else {
+                goToPage('account-page');
+            }
+        };
+
+        function populateCountries() {
+            const continent = document.getElementById('continent-select').value;
+            const countrySelect = document.getElementById('country-select');
+            countrySelect.innerHTML = '<option value="">-- Select Team --</option>';
+            if (!continent) {
+                countrySelect.disabled = true;
+                return;
+            }
+            countrySelect.disabled = false;
+            regionalTeams[continent].forEach(team => {
+                const opt = document.createElement('option');
+                opt.value = JSON.stringify(team);
+                opt.innerText = `${team.flag} ${team.name}`;
+                countrySelect.appendChild(opt);
+            });
+        }
+
+        function createAccount() {
+            const nameInput = document.getElementById('username-input').value.trim();
+            const countryRaw = document.getElementById('country-select').value;
+            if (!nameInput || !countryRaw) {
+                alert("Please fill in all manager fields!");
+                return;
+            }
+            const chosenTeam = JSON.parse(countryRaw);
+            userAccount = {
+                name: nameInput,
+                managerId: "WC-" + Math.floor(1000 + Math.random() * 9000),
+                highScore: 0,
+                favTeam: chosenTeam.name,
+                favFlag: chosenTeam.flag,
+                trophies: []
+            };
+            localStorage.setItem('wc_quiz_profile', JSON.stringify(userAccount));
+            showWelcomePage();
+        }
+
+        function resetAccount() {
+            if (confirm("Reset account manager logs? Everything will be wiped.")) {
+                localStorage.removeItem('wc_quiz_profile');
+                userAccount = null;
+                document.getElementById('username-input').value = "";
+                document.getElementById('continent-select').value = "";
+                document.getElementById('country-select').disabled = true;
+                goToPage('account-page');
+            }
+        }
+
+        function updateTrophyDisplay() {
+            const list = userAccount.trophies || [];
+            const badges = {
+                't-group': document.getElementById('t-group'),
+                't-ko': document.getElementById('t-ko'),
+                't-perfect': document.getElementById('t-perfect'),
+                't-cup': document.getElementById('t-cup')
+            };
+            for (let key in badges) {
+                if (badges[key]) badges[key].classList.remove('unlocked');
+            }
+            list.forEach(id => {
+                if (badges[id]) badges[id].classList.add('unlocked');
+            });
+        }
+
+        function awardTrophy(id) {
+            if (!userAccount.trophies) userAccount.trophies = [];
+            if (!userAccount.trophies.includes(id)) {
+                userAccount.trophies.push(id);
+                localStorage.setItem('wc_quiz_profile', JSON.stringify(userAccount));
+            }
+        }
+
+        function showWelcomePage() {
+            document.getElementById('welcome-profile').innerHTML = `
+                <div>👤 <b>${userAccount.name}</b> [${userAccount.managerId}] <br> ⚽ Support: ${userAccount.favFlag} <b>${userAccount.favTeam}</b> <br> 🏆 BEST: <b>${userAccount.highScore} pts</b></div>
+                <button class="reset-btn" onclick="resetAccount()">Reset</button>
+            `;
+            updateTrophyDisplay();
+            goToPage('welcome-page');
+        }
+
+        function goToPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function quitGame() {
+            clearInterval(timerInterval);
+            showWelcomePage();
+        }
+
+        function startLevel(levelNum) {
+            currentLevel = levelNum;
+            currentQuestionIndex = 0;
+            stageScore = 0;
+            hasPassedCurrentStage = false;
+            if (levelNum === 1) {
+                totalScore = 0;
+                lives = 3;
+                hintsAvailableCount = 1; 
+            }
+            document.getElementById('current-level-display').innerText = currentLevel;
+            updateLivesDisplay();
+            goToPage('quiz-page');
+            loadQuestion();
+        }
+
+        function updateLivesDisplay() {
+            let heartStr = "";
+            for(let i=0; i<lives; i++) heartStr += "❤️";
+            document.getElementById('lives-display').innerText = heartStr || "💔 ELIMINATED";
+        }
+
+        function updateCommentatorPrompt() {
+            const hud = document.getElementById('commentator-hud');
+            const remainingToPass = Math.max(0, (passMarkTarget - stageScore) / 10);
+            if (stageScore === 0) {
+                hud.innerText = "📋 Tactician Note: Let's secure the early opener!";
+                hud.style.color = "#4facfe";
+            } else if (!hasPassedCurrentStage && remainingToPass > 0) {
+                hud.innerText = `🔥 Go for the win! Just ${remainingToPass} more correct answers to claim your stage reward!`;
+                hud.style.color = "#ffd700";
+            } else if (hasPassedCurrentStage) {
+                hud.innerText = "🏆 Target Cleared! Push for a clean-sheet maximum score!";
+                hud.style.color = "#00ff87";
+            }
+        }
+
+        function loadQuestion() {
+            clearInterval(timerInterval);
+            timeLeft = maxTime;
+            updateTimerBar();
+            updateCommentatorPrompt();
+
+            document.getElementById('hint-count-display').innerText = hintsAvailableCount;
+            document.getElementById('hint-button-element').disabled = (hintsAvailableCount <= 0);
+
+            const pool = questionsDatabase[currentLevel];
+            const currentQuestion = pool[currentQuestionIndex];
+            
+            document.getElementById('question-number-display').innerText = `${currentQuestionIndex + 1}/10`;
+            document.getElementById('stage-score-display').innerText = stageScore;
+            document.getElementById('question-text').innerText = currentQuestion.q;
+            
+            const container = document.getElementById('options-container');
+            container.innerHTML = "";
+            container.classList.remove('disabled');
+            
+            let optionsMapped = currentQuestion.options.map((text, idx) => {
+                return { text: text, originalIndex: idx };
+            });
+
+            for (let i = optionsMapped.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [optionsMapped[i], optionsMapped[j]] = [optionsMapped[j], optionsMapped[i]];
+            }
+
+            currentShuffledOptions = optionsMapped;
+            
+            currentShuffledOptions.forEach((option, index) => {
+                if (option.originalIndex === currentQuestion.answer) {
+                    currentCorrectShuffledIndex = index;
+                }
+                const button = document.createElement('button');
+                button.className = "option-btn";
+                button.innerText = option.text;
+                button.onclick = () => selectAnswer(index);
+                container.appendChild(button);
+            });
+
+            let lastWholeSecond = Math.ceil(timeLeft);
+            timerInterval = setInterval(() => {
+                timeLeft -= 0.1;
+                updateTimerBar();
+
+                let currentWholeSecond = Math.ceil(timeLeft);
+                if (timeLeft <= 5 && currentWholeSecond < lastWholeSecond && timeLeft > 0) {
+                    playSound('tick');
+                    lastWholeSecond = currentWholeSecond;
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    triggerWrongChoiceAnimation(-1);
+                }
+            }, 100);
+        }
+
+        function useTacticalHint() {
+            if (hintsAvailableCount <= 0) return;
+            hintsAvailableCount--;
+            document.getElementById('hint-count-display').innerText = hintsAvailableCount;
+            document.getElementById('hint-button-element').disabled = true;
+            playSound('hint');
+
+            const container = document.getElementById('options-container');
+            const buttons = container.querySelectorAll('.option-btn');
+            let eliminatedCount = 0;
+            for (let i = 0; i < currentShuffledOptions.length; i++) {
+                if (i !== currentCorrectShuffledIndex && eliminatedCount < 2) {
+                    if (buttons[i]) {
+                        buttons[i].classList.add('hidden-option');
+                    }
+                    eliminatedCount++;
+                }
+            }
+        }
+
+        function updateTimerBar() {
+            document.getElementById('timer-bar').style.width = `${Math.max(0, (timeLeft / maxTime) * 100)}%`;
+        }
+
+        function animateScoreUp(targetScore) {
+            const scoreDisplayElement = document.getElementById('stage-score-display');
+            scoreDisplayElement.classList.add('score-pulse');
+            let currentDisplayValue = parseInt(scoreDisplayElement.innerText) || 0;
+            const incrementSpeed = 30; 
+            let counterInterval = setInterval(() => {
+                if (currentDisplayValue >= targetScore) {
+                    clearInterval(counterInterval);
+                    scoreDisplayElement.innerText = targetScore;
+                    setTimeout(() => scoreDisplayElement.classList.remove('score-pulse'), 200);
+                } else {
+                    currentDisplayValue += 2; 
+                    scoreDisplayElement.innerText = currentDisplayValue;
+                }
+            }, incrementSpeed);
+        }
+
+        function selectAnswer(selectedIndex) {
+            clearInterval(timerInterval);
+            const container = document.getElementById('options-container');
+            container.classList.add('disabled'); 
+            const buttons = container.querySelectorAll('.option-btn');
+
+            if (selectedIndex === currentCorrectShuffledIndex) {
+                totalScore += 10;
+                stageScore += 10;
+                playSound('correct');
+                if(buttons[selectedIndex]) buttons[selectedIndex].classList.add('correct');
+                animateScoreUp(stageScore);
+                if (stageScore >= passMarkTarget && !hasPassedCurrentStage) {
+                    hasPassedCurrentStage = true;
+                    setTimeout(triggerMidGameReward, 800); 
+                } else {
+                    setTimeout(advanceProgression, 1400);
+                }
+            } else {
+                triggerWrongChoiceAnimation(selectedIndex);
+            }
+        }
+
+        function triggerMidGameReward() {
+            clearInterval(timerInterval);
+            playSound('reward');
+            const rewardsPool = [
+                { text: "+1 Extra Life Added Pool Capacity!", action: () => { lives++; updateLivesDisplay(); } },
+                { text: "Tactical Hint Restored (+1 💡 Help Item)!", action: () => { hintsAvailableCount++; } }
+            ];
+            const selectedReward = rewardsPool[Math.floor(Math.random() * rewardsPool.length)];
+            selectedReward.action();
+            document.getElementById('reward-perk-display').innerText = `🎁 PERK GRANTED: ${selectedReward.text}`;
+            document.getElementById('reward-modal').style.display = 'flex';
+        }
+
+        function resumeFromReward() {
+            document.getElementById('reward-modal').style.display = 'none';
+            advanceProgression();
+        }
+
+        function triggerWrongChoiceAnimation(selectedIndex) {
+            lives--;
+            updateLivesDisplay();
+            playSound('wrong');
+
+            const mainContainer = document.getElementById('main-container');
+            mainContainer.classList.add('shake');
+            setTimeout(() => mainContainer.classList.remove('shake'), 400);
+
+            const container = document.getElementById('options-container');
+            const buttons = container.querySelectorAll('.option-btn');
+
+            if(selectedIndex !== -1 && buttons[selectedIndex]) buttons[selectedIndex].classList.add('wrong');
+            if(buttons[currentCorrectShuffledIndex]) buttons[currentCorrectShuffledIndex].classList.add('correct');
+
+            setTimeout(() => {
+                if (lives <= 0) handleGameOver(false);
+                else advanceProgression();
+            }, 1200);
+        }
+
+        function advanceProgression() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < 10) {
+                loadQuestion();
+            } else {
+                handleLevelEnd();
+            }
+        }
+
+        function handleLevelEnd() {
+            if (hasPassedCurrentStage) {
+                if (currentLevel === 1) awardTrophy('t-group');
+                if (currentLevel === 3) awardTrophy('t-ko');
+                if (stageScore === 100) awardTrophy('t-perfect');
+
+                if (currentLevel < 5) {
+                    document.getElementById('transition-header').innerText = "🔥 STAGE CLEARED";
+                    document.getElementById('transition-text').innerText = `Phenomenal performance! You passed the stage mark. Prepare for Knockout Stage ${currentLevel + 1}.`;
+                    document.getElementById('next-stage-btn').innerText = `Unlock Stage ${currentLevel + 1}`;
+                    goToPage('transition-page');
+                } else {
+                    awardTrophy('t-cup');
+                    handleGameOver(true);
+                }
+            } else {
+                document.getElementById('transition-header').innerText = "🟥 MATCH DEFEAT";
+                document.getElementById('transition-text').innerText = `You didn't hit the 70 PTS pass target required to advance out of Stage ${currentLevel}. Try again!`;
+                document.getElementById('next-stage-btn').innerText = `Retry Stage ${currentLevel}`;
+                document.getElementById('next-stage-btn').onclick = () => startLevel(currentLevel);
+                goToPage('transition-page');
+            }
+        }
+
+        function advanceToNextStage() {
+            document.getElementById('next-stage-btn').onclick = advanceToNextStage;
+            startLevel(currentLevel + 1);
+        }
+
+        function handleGameOver(completedAll) {
+            clearInterval(timerInterval);
+            if (totalScore > userAccount.highScore) {
+                userAccount.highScore = totalScore;
+            }
+            localStorage.setItem('wc_quiz_profile', JSON.stringify(userAccount));
+
+            latestFinalScore = totalScore;
+            latestManagerName = userAccount.name;
+
+            let badgeText = "";
+            if (totalScore >= 450) badgeText = "🐐 GOLDEN WORLD CUP LEGEND";
+            else if (totalScore >= 350) badgeText = "🥈 ELITE KNOCKOUT STRATEGIST";
+            else if (totalScore >= 200) badgeText = "📋 MIDFIELD TACTICIAN";
+            else badgeText = "❌ GROUP STAGE EXCLUSION";
+            latestBadgeText = badgeText;
+
+            document.getElementById('results-profile').innerHTML = `
+                <div>👤 <b>${userAccount.name}</b> [${userAccount.managerId}] <br> ⚽ Support: ${userAccount.favFlag} <b>${userAccount.favTeam}</b> <br> 🏆 BEST: <b>${userAccount.highScore} pts</b></div>
+            `;
+
+            document.getElementById('results-header').innerText = completedAll ? "🏆 TOURNAMENT CHAMPION!" : "🟥 MATCH ELIMINATION";
+            document.getElementById('performance-badge').innerText = badgeText;
+            document.getElementById('final-score').innerText = totalScore;
+            goToPage('results-page');
+        }
+
+        function restartQuiz() {
+            startLevel(1);
+        }
+    </script>
+</body>
+</html>
